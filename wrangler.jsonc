@@ -12,7 +12,7 @@
     {
       "binding": "DB",
       "database_name": "activa360-db",
-      "database_id": "REEMPLAZAR_CON_DATABASE_ID",
+      "database_id": "929c83aa-6839-434d-a335-aafe05465b80",
       "migrations_dir": "migrations"
     }
   ],
