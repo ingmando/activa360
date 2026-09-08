@@ -15,6 +15,16 @@ export async function renderDashboard(user){
 
   const activeEncounter=encounters.find(e=>!['Finalizado','Seguimiento'].includes(e.status)); const encIns=activeEncounter?encounterParticipants.filter(p=>p.encounterId===activeEncounter.id&&['Inscrito','Pago parcial','Pagado','Asistió','Completó'].includes(p.status)).length:0; const encPct=activeEncounter?.goal?Math.round(encIns*100/activeEncounter.goal):0; const upcomingEvents=events.filter(e=>e.status!=='Finalizado').slice(0,3);
   const title=roleCopy[user.role]?.[0]||'Dashboard',subtitle=roleCopy[user.role]?.[1]||'';
+
+  const quickByRole={
+    pastor:[['personas','+','Registrar persona'],['reuniones-generales','✦','Reunión general'],['reunion-doce','12','Reunión de 12'],['alertas','!','Atender alertas']],
+    leader12:[['doce','♢','Mi equipo'],['celulas','⌂','Mis células'],['reunion-doce','12','Reporte semanal'],['encuentros','180°','Encuentro 180°']],
+    cellLeader:[['reuniones','◷','Registrar reunión'],['personas','◉','Personas'],['seguimiento','✓','Seguimiento'],['formacion','▤','Formación']],
+    server:[['ministerios','✦','Mi ministerio'],['reuniones-generales','✦','Próximo servicio'],['formacion','▤','Mi formación'],['alertas','!','Pendientes']],
+    member:[['formacion','▤','Mi formación'],['reuniones-generales','✦','Agenda'],['ministerios','✦','Ministerios'],['alertas','!','Avisos']]
+  };
+  const quick=quickByRole[user.role]||quickByRole.pastor;
+
   const kpisByRole={
     pastor:[['Personas',people.length,'Iglesia completa'],['Células',cells.length,`${noReport} requieren revisión`],['Formación',trainingActive,`${trainingApproved} aprobaciones`],['Nuevos en consolidación',pending,`${overdue} vencidos`]],
     leader12:[['Equipo directo',8,'Meta 12'],['Células de cobertura',7,'Directas + discípulos'],['Reuniones',recent.length,'Últimos registros'],['Seguimientos',pending,'Pendientes']],
@@ -24,6 +34,7 @@ export async function renderDashboard(user){
   };
   const kpis=kpisByRole[user.role]||kpisByRole.pastor;
   return `<div class="page-head"><div><div class="eyebrow">Activa 360</div><h1>${title}</h1><p>${subtitle}</p></div><span class="badge scope-badge">${user.scope}</span></div>
+  <section class="mobile-action-panel card section-card"><div class="section-title"><div><div class="eyebrow">Acciones rápidas</div><h3>¿Qué necesitas hacer?</h3></div></div><div class="quick-app-grid">${quick.map(q=>`<a href="#/${q[0]}"><span>${q[1]}</span><strong>${q[2]}</strong></a>`).join('')}</div></section>
   ${user.role==='pastor'?'<section class="pastoral-hero"><div><span class="eyebrow light">VISIÓN DE MULTIPLICACIÓN</span><h2>12 → 144 → 1.728</h2><p>La estructura crece desde relaciones de discipulado; reuniones y asistencia permiten observar la salud real de cada célula.</p></div><div class="hero-action-stack"><a class="btn hero-btn" href="#/arbol">Ver árbol ministerial</a><a class="btn hero-btn subtle" href="#/seguimiento">Ver consolidación</a></div></section>':''}
   <div class="grid kpi-grid">${kpis.map(k=>`<div class="card kpi"><div class="kpi-label">${k[0]}</div><div class="kpi-value ${String(k[1]).length>8?'kpi-text':''}">${k[1]}</div><div class="kpi-delta">${k[2]}</div></div>`).join('')}</div>
   <div class="grid two-col"><section class="card section-card"><div class="section-title"><h3>Salud ministerial</h3><span class="badge">Semana actual</span></div>${[['Ganar',72],['Consolidar',58],['Discipular',81],['Enviar',46]].map(x=>`<div style="margin:16px 0"><div class="list-row" style="padding:0 0 7px;border:0"><span>${x[0]}</span><strong>${x[1]}%</strong></div><div class="progress"><span style="width:${x[1]}%"></span></div></div>`).join('')}</section><section class="card section-card"><div class="section-title"><div><h3>Alertas</h3><p class="muted">Situaciones que requieren atención.</p></div><a class="btn btn-soft btn-sm" href="#/alertas">Ver centro</a></div><div class="list"><div class="list-row"><div><strong>${pending} seguimientos activos</strong><div class="muted">Nuevos dentro de Ganar → Consolidar</div></div><span class="badge warn">Revisar</span></div><div class="list-row"><div><strong>${noReport} células sin reporte</strong><div class="muted">Semana actual</div></div><span class="badge danger">Prioridad</span></div><div class="list-row"><div><strong>${present} asistencias registradas</strong><div class="muted">Últimos ${recent.length} encuentros</div></div><span class="badge success">Actualizado</span></div></div></section></div>

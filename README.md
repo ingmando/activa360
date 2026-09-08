@@ -1,3 +1,9 @@
+# Activa 360 v1.3 UX — Cloudflare Workers + D1
+
+Versión UX Mobile First construida sobre `v1.2.1 Stable Clean`. Conserva la misma API, binding `DB` y D1; el foco de esta entrega es navegación, responsive, interacción táctil y experiencia PWA.
+
+> **Importante:** la recuperación automática de contraseña por correo y las notificaciones push están preparadas a nivel de interfaz/arquitectura, pero no se consideran activas hasta integrar proveedor de correo/push.
+
 # Activa 360 v1.2.1 — Stable Clean (Cloudflare Workers + D1)
 
 Versión estable y reproducible tomada del despliegue funcional del piloto. Se limpiaron artefactos locales (`node_modules`, `.wrangler`) y se corrigieron los hashes de usuarios demo a PBKDF2-SHA256 con 100.000 iteraciones.

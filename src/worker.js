@@ -141,7 +141,7 @@ async function handleAdmin(request, env, path, user) {
   if(path==='/api/admin/export' && request.method==='GET') {
     const {results}=await env.DB.prepare('SELECT store_name,id,data FROM app_records ORDER BY store_name,id').all();
     const stores={}; for(const row of results){ (stores[row.store_name]??=[]).push(JSON.parse(row.data)); }
-    return json({app:'Activa 360',version:'1.2-cloud-d1',exportedAt:new Date().toISOString(),stores});
+    return json({app:'Activa 360',version:'1.3-ux-cloud-d1',exportedAt:new Date().toISOString(),stores});
   }
   if(path==='/api/admin/import' && request.method==='POST') {
     const payload=await request.json(); if(!payload?.stores) return json({error:'Formato de respaldo inválido'},400);
