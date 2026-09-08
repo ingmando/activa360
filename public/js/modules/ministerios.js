@@ -3,7 +3,7 @@ import { go } from '../router.js';
 
 function esc(v=''){return String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
 function initials(name='M'){return name.split(' ').slice(0,2).map(x=>x[0]).join('').toUpperCase();}
-function canManage(user){return ['pastor','leader12'].includes(user.role);}
+function canManage(user){return ['superadmin','pastor','leader12'].includes(user.role);}
 function fmtDate(v){if(!v)return '—';return new Intl.DateTimeFormat('es-CO',{weekday:'short',day:'2-digit',month:'short'}).format(new Date(v+'T12:00:00'));}
 function statusClass(s){return s==='Servido'?'success':s==='Confirmado'?'info':s==='Ausente'?'danger':'warn';}
 

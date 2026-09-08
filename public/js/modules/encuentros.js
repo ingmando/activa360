@@ -3,7 +3,7 @@ import { go } from '../router.js';
 const esc=(v='')=>String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
 const fmt=v=>v?new Intl.DateTimeFormat('es-CO',{day:'2-digit',month:'short',year:'numeric'}).format(new Date(v+'T12:00:00')):'—';
 const money=v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(Number(v)||0);
-const canManage=u=>['pastor','leader12'].includes(u.role);
+const canManage=u=>['superadmin','pastor','leader12'].includes(u.role);
 const states=['Borrador','Planificación','Preinscripciones','Inscripciones','Preparación','En ejecución','Cierre','Seguimiento','Finalizado'];
 function pct(a,b){return b?Math.min(100,Math.round((Number(a)||0)*100/Number(b))):0}
 function stage(e){if(['Finalizado','Seguimiento','Cierre'].includes(e.status))return'Después';if(e.status==='En ejecución')return'Durante';return'Antes'}

@@ -1,6 +1,8 @@
-# Activa 360 v1.3.2 UX Polish — Cloudflare Workers + D1
+# Activa 360 v1.3.3 — Unidades Ministeriales + Sharing
 
-> **v1.3.2 UX Polish** consolida la experiencia responsive de v1.3: resumen de Reunión de 12 rediseñado, sidebar fijo en escritorio, menú de perfil con cierre exterior/Escape, tabla semanal sticky, Personas como cards en móvil, breadcrumbs del árbol, actualización PWA controlada y badge de alertas cuando el sistema operativo lo permite.
+# Activa 360 v1.3.3 — Unidades Ministeriales + Sharing
+
+> **v1.3.3** incorpora unidades ministeriales (individual/pareja), hábitos personales y de unidad en Reunión de 12, estados Borrador/Abierta/Cerrada funcionales y enlaces seguros por WhatsApp para diligenciamiento sin autenticación.
 
 
 Versión UX Mobile First construida sobre `v1.2.1 Stable Clean`. Conserva la misma API, binding `DB` y D1; el foco de esta entrega es navegación, responsive, interacción táctil y experiencia PWA.
@@ -135,3 +137,7 @@ Cada registro de negocio conserva el objeto de la v1.2 en una columna JSON valid
 - `docs/CREDENCIALES_INICIALES.md`
 - `docs/ARQUITECTURA_MINISTERIAL.md`
 - `docs/MANUAL_IDENTIDAD_VISUAL.md`
+
+
+## v1.3.3
+Ver `CHANGELOG_v1.3.3.md` y `docs/QA_V1.3.3_MINISTRY_UNITS_SHARING.md`. La versión añade unidades ministeriales, hábitos personales/unidad, estados funcionales de Reunión de 12 y enlaces seguros por WhatsApp.

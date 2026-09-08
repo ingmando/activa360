@@ -4,7 +4,7 @@ import { go } from '../router.js';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
 const initials=n=>String(n||'').split(' ').filter(Boolean).slice(0,2).map(x=>x[0]).join('').toUpperCase();
 const pct=n=>Math.max(0,Math.min(100,Number(n)||0));
-const canManage=u=>['pastor','leader12'].includes(u.role);
+const canManage=u=>['superadmin','pastor','leader12'].includes(u.role);
 
 async function data(){
   const [levels,enrollments,people,sessions,attendance]=await Promise.all([

@@ -984,3 +984,51 @@ button,.btn,.icon-btn,.nav-btn,.mobile-bottom button{min-height:44px}
   .twelve-mini-metric>span{font-size:.61rem!important}
   .twelve-mini-metric>small{font-size:.54rem!important}
 }
+
+/* ===== v1.3.3 · Unidades ministeriales + Reunión de 12 Sharing ===== */
+.status-help{display:block;margin-top:8px;color:var(--muted);font-size:.88rem;line-height:1.4;max-width:760px}
+.meeting-status-actions{align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.devotional-stack,.devotional-mobile-list{display:grid;gap:7px;min-width:0}
+.devotional-person{display:flex;align-items:center;justify-content:space-between;gap:10px;min-width:0}
+.devotional-person>span:first-child{min-width:0;overflow-wrap:anywhere;color:var(--muted)}
+.personal-habit-box{border:1px solid var(--border);border-radius:16px;padding:12px 14px;background:#fbfdfe;min-width:0}
+.habit-section-label,.habit-group-title{display:block;color:var(--primary);font-size:.8rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-bottom:9px}
+.unit-habits{grid-template-columns:repeat(3,minmax(0,1fr))}
+.unit-report-card,.unit-report-card *{min-width:0;max-width:100%}
+.unit-card-title{min-width:0;display:grid;gap:3px}
+.unit-card-title strong{overflow-wrap:anywhere}
+.unit-card-actions{display:grid;grid-template-columns:minmax(0,1fr);gap:9px;margin-top:14px}
+.unit-card-actions .btn{width:100%;max-width:100%;white-space:normal}
+.report12-modal{width:min(760px,calc(100vw - 24px));max-width:760px;overflow:hidden}
+.report12-form-grid{min-width:0}
+.report12-form-grid .field,.report12-form-grid select,.report12-form-grid textarea{min-width:0;max-width:100%;width:100%}
+.report-auto-summary{grid-template-columns:repeat(4,minmax(0,1fr))}
+.field-help{color:var(--muted);font-size:.78rem;line-height:1.35;margin-top:6px}
+.wide-modal{width:min(900px,calc(100vw - 24px));max-width:900px}
+.unit-admin-list{display:grid;gap:8px;max-height:42vh;overflow:auto;margin:4px 0 20px}
+.unit-admin-row{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid var(--border);border-radius:14px;padding:12px 14px;min-width:0}
+.unit-admin-row>div{display:grid;gap:3px;min-width:0}.unit-admin-row strong,.unit-admin-row small{overflow-wrap:anywhere}.unit-admin-row small{color:var(--muted)}
+.unit-create-form{border-top:1px solid var(--border);padding-top:18px}
+.tree-node-v13 strong{overflow-wrap:anywhere}
+
+@media(max-width:767px){
+  .meeting-status-actions{justify-content:flex-start;width:100%}
+  .unit-habits{grid-template-columns:1fr}
+  .unit-habits>div{display:flex!important;align-items:center;justify-content:space-between;gap:12px;width:100%}
+  .twelve-auto-mobile{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .twelve-auto-mobile>div{min-width:0}
+  .report-auto-summary{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .report12-modal{max-height:92dvh;overflow:auto}
+  .unit-admin-row{align-items:flex-start;flex-direction:column}
+  .unit-admin-row .btn{width:100%}
+  .wide-modal{max-height:92dvh;overflow:auto}
+}
+
+@media(max-width:420px){
+  .twelve-leader-card{padding:16px!important}
+  .twelve-card-head{align-items:flex-start!important;gap:8px!important}
+  .twelve-card-head .badge{flex:0 1 auto;white-space:normal;text-align:center}
+  .twelve-auto-mobile{gap:8px!important}
+  .twelve-auto-mobile strong{font-size:1.35rem!important}
+}
+.table-action-stack{display:grid;gap:6px;min-width:112px}.table-action-stack .btn{white-space:normal;line-height:1.2}

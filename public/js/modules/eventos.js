@@ -3,7 +3,7 @@ import { go } from '../router.js';
 const esc=(v='')=>String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
 const fmt=v=>v?new Intl.DateTimeFormat('es-CO',{day:'2-digit',month:'short',year:'numeric'}).format(new Date(v+'T12:00:00')):'—';
 const money=v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(Number(v)||0);
-const canManage=u=>['pastor','leader12'].includes(u.role);
+const canManage=u=>['superadmin','pastor','leader12'].includes(u.role);
 function phase(e){const t=new Date().toISOString().slice(0,10);if(e.status==='Finalizado'||e.endDate<t)return'Después';if(e.startDate<=t&&e.endDate>=t)return'Durante';return'Antes';}
 export async function renderEventsList(user){
  const [events,tasks,parts]=await Promise.all([getAll('events'),getAll('eventTasks'),getAll('eventParticipants')]);

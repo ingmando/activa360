@@ -1,4 +1,5 @@
 import { getAll, getOne, putOne, nextId } from '../database.js';
+import { getMinistryUnits, createCoupleUnit, removeMinistryUnit, unitMembers, unitRepresentative, unitContainsPerson, firstName } from './ministry-units.js';
 function esc(v=''){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
 function initials(n=''){return n.split(' ').filter(Boolean).slice(0,2).map(x=>x[0]).join('').toUpperCase();}
 function levelLabel(l){l=Number(l);return l===0?'Pastores generales':l===1?'Equipo de 12':l===2?'Red 144':l===3?'Red 1728':`Nivel ${l}`;}
@@ -6,12 +7,13 @@ function leadershipState(d){return d?.status||'Identificado';}
 
 export async function renderTeamsHome(user){
   const people=await getAll('people'), dev=await getAll('leadershipDevelopment'), cells=await getAll('cells');
+  const unitCtx=await getMinistryUnits({levels:[1,2,3]}); const units12=unitCtx.units.filter(u=>Number(u.leadershipLevel)===1); const people12=units12.reduce((n,u)=>n+(u.secondaryPersonId?2:1),0);
   const leaders=people.filter(p=>Number(p.leadershipLevel)>=0 && Number(p.leadershipLevel)<=3);
   const teamLeaders=leaders.filter(p=>people.some(x=>Number(x.mentorId)===Number(p.id)));
   const candidates=dev.filter(d=>d.status!=='Enviado');
   const sent=dev.filter(d=>d.status==='Enviado').length;
-  return `<div class="page-head"><div><div class="eyebrow">Enviar · multiplicar</div><h1>Equipos de doce</h1><p>Gestiona mentoría, equipos directos, cobertura y formación de nuevos líderes.</p></div><button class="btn btn-primary" id="newLeadershipCandidate">+ Líder en formación</button></div>
-  <section class="kpi-grid"><article class="kpi-card"><span>Líderes con equipo</span><strong>${teamLeaders.length}</strong><small>Con discípulos directos</small></article><article class="kpi-card"><span>Equipo de 12</span><strong>${people.filter(p=>p.leadershipLevel===1).length}/12</strong><small>Primera generación</small></article><article class="kpi-card"><span>En formación</span><strong>${candidates.length}</strong><small>Proceso de envío activo</small></article><article class="kpi-card"><span>Enviados</span><strong>${sent}</strong><small>Liderazgo aprobado</small></article></section>
+  return `<div class="page-head"><div><div class="eyebrow">Enviar · multiplicar</div><h1>Equipos y unidades ministeriales</h1><p>Gestiona mentoría, parejas ministeriales, equipos directos, cobertura y formación de nuevos líderes.</p></div><div class="action-row"><button class="btn btn-soft" id="manageMinistryUnits">Unidades ministeriales</button><button class="btn btn-primary" id="newLeadershipCandidate">+ Líder en formación</button></div></div>
+  <section class="kpi-grid"><article class="kpi-card"><span>Líderes con equipo</span><strong>${teamLeaders.length}</strong><small>Con discípulos directos</small></article><article class="kpi-card"><span>Equipo de 12</span><strong>${units12.length}</strong><small>${people12} personas · unidades ministeriales</small></article><article class="kpi-card"><span>En formación</span><strong>${candidates.length}</strong><small>Proceso de envío activo</small></article><article class="kpi-card"><span>Enviados</span><strong>${sent}</strong><small>Liderazgo aprobado</small></article></section>
   <section class="card section-card"><div class="section-title"><div><div class="eyebrow">Cobertura</div><h3>Equipos activos</h3></div><input id="teamSearch" class="compact-input" placeholder="Buscar líder..."></div><div class="team-grid" id="teamGrid">${teamLeaders.slice(0,40).map(l=>{const direct=people.filter(p=>Number(p.mentorId)===Number(l.id));const c=cells.filter(x=>Number(x.leaderId)===Number(l.id));return `<button class="team-card" data-team="${l.id}" data-name="${esc(l.name.toLowerCase())}"><div class="mini-avatar">${initials(l.name)}</div><div class="team-card-copy"><strong>${esc(l.name)}</strong><span>${levelLabel(l.leadershipLevel)}</span><small>${direct.length} discípulos directos · ${c.length} célula${c.length===1?'':'s'}</small></div><b>Ver equipo →</b></button>`}).join('')}</div></section>
   <section class="card section-card"><div class="section-title"><div><div class="eyebrow">Pipeline de liderazgo</div><h3>Formación para enviar</h3></div></div><div class="leadership-pipeline">${['Identificado','Formación','Asistente','Aprobado','Enviado'].map(st=>`<div class="leadership-column"><div class="pipeline-head"><strong>${st}</strong><span>${dev.filter(d=>leadershipState(d)===st).length}</span></div>${dev.filter(d=>leadershipState(d)===st).slice(0,8).map(d=>{const p=people.find(x=>x.id===d.personId);return `<button class="pipeline-person" data-person="${d.personId}"><strong>${esc(p?.name||'Persona')}</strong><small>Mentor: ${esc(people.find(x=>x.id===d.mentorId)?.name||'Sin asignar')}</small></button>`}).join('')||'<div class="empty-mini">Sin registros</div>'}</div>`).join('')}</div></section>`;
 }
@@ -21,6 +23,7 @@ export async function bindTeamsHome(){
   document.querySelectorAll('[data-person]').forEach(b=>b.onclick=()=>location.hash=`#/personas/${b.dataset.person}`);
   const q=document.querySelector('#teamSearch'); if(q)q.oninput=()=>document.querySelectorAll('[data-team]').forEach(b=>b.style.display=b.dataset.name.includes(q.value.toLowerCase())?'':'none');
   document.querySelector('#newLeadershipCandidate')?.addEventListener('click',openCandidateModal);
+  document.querySelector('#manageMinistryUnits')?.addEventListener('click',openUnitsModal);
 }
 
 async function openCandidateModal(){
@@ -50,4 +53,17 @@ export async function bindTeamDetail(leaderId){
   document.querySelector('#openLeaderPerson')?.addEventListener('click',()=>location.hash=`#/personas/${leaderId}`);
   document.querySelectorAll('[data-person]').forEach(b=>b.onclick=()=>location.hash=`#/personas/${b.dataset.person}`);
   document.querySelectorAll('[data-cell]').forEach(b=>b.onclick=()=>location.hash=`#/celulas/${b.dataset.cell}`);
+}
+
+
+async function openUnitsModal(){
+  const modal=document.querySelector('#globalModal'); const ctx=await getMinistryUnits({levels:[0,1,2,3]});
+  const eligible=ctx.people.filter(p=>p.active!==false&&Number(p.leadershipLevel)>=0&&Number(p.leadershipLevel)<=3);
+  const saved=ctx.saved;
+  modal.innerHTML=`<div class="modal-backdrop"><div class="modal wide-modal"><div class="modal-head"><div><div class="eyebrow">Arquitectura ministerial</div><h2>Unidades ministeriales</h2><p class="muted">Las personas siguen siendo independientes. Aquí se agrupan como unidad individual o pareja para estadísticas, árbol y Reunión de 12.</p></div><button class="icon-btn" id="closeUnits">×</button></div>
+  <div class="unit-admin-list">${ctx.units.filter(u=>Number(u.leadershipLevel)<=3).map(u=>{const ms=unitMembers(u,ctx.peopleById),rep=unitRepresentative(u,ctx.peopleById);return `<div class="unit-admin-row"><div><strong>${esc(u.displayName)}</strong><small>${u.type==='couple'?'Pareja ministerial':'Individual'} · Nivel ${u.leadershipLevel} · Representante: ${esc(rep?.name||'—')}</small></div>${u.synthetic?'':'<button class="btn btn-danger btn-sm" data-delete-unit="'+u.id+'">Desvincular pareja</button>'}</div>`}).join('')}</div>
+  <form id="newUnitForm" class="form-grid unit-create-form"><div class="field form-span"><div class="habit-group-title">Crear pareja ministerial</div></div><div class="field"><label>Persona principal</label><select name="primary" required><option value="">Seleccionar</option>${eligible.map(p=>`<option value="${p.id}">${esc(p.name)} · Nivel ${p.leadershipLevel}</option>`).join('')}</select></div><div class="field"><label>Cónyuge / pareja ministerial</label><select name="secondary" required><option value="">Seleccionar</option>${eligible.map(p=>`<option value="${p.id}">${esc(p.name)} · Nivel ${p.leadershipLevel}</option>`).join('')}</select></div><div class="field"><label>Representante</label><select name="representative"><option value="primary">Persona principal</option><option value="secondary">Cónyuge</option></select></div><div class="field"><label>Nombre visible (opcional)</label><input name="displayName" placeholder="Armando y Tatiana"></div><div class="form-actions form-span"><button class="btn btn-primary">Crear pareja ministerial</button></div></form></div></div>`;
+  const close=()=>modal.innerHTML=''; document.querySelector('#closeUnits').onclick=close;
+  document.querySelectorAll('[data-delete-unit]').forEach(b=>b.onclick=async()=>{if(confirm('¿Desvincular esta pareja? Las dos personas volverán a visualizarse como unidades individuales.')){await removeMinistryUnit(Number(b.dataset.deleteUnit));close();openUnitsModal();}});
+  document.querySelector('#newUnitForm').onsubmit=async e=>{e.preventDefault();const f=new FormData(e.target),a=Number(f.get('primary')),b=Number(f.get('secondary'));if(a===b){alert('Selecciona dos personas diferentes.');return;}const already=ctx.saved.some(u=>unitContainsPerson(u,a)||unitContainsPerson(u,b));if(already){alert('Una de las personas ya pertenece a una pareja ministerial. Desvincúlala primero.');return;}const pa=ctx.peopleById.get(a),pb=ctx.peopleById.get(b);if(Number(pa?.leadershipLevel)!==Number(pb?.leadershipLevel)){if(!confirm('Las personas están en niveles de liderazgo diferentes. ¿Deseas continuar?'))return;}await createCoupleUnit({primaryPersonId:a,secondaryPersonId:b,representativePersonId:f.get('representative')==='secondary'?b:a,displayName:f.get('displayName')||`${firstName(pa?.name)} y ${firstName(pb?.name)}`});close();openUnitsModal();};
 }

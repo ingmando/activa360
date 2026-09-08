@@ -7,7 +7,7 @@ const ACTION_TYPES = ['Llamada','WhatsApp','Visita','Oración','Conversación','
 function esc(v=''){return String(v ?? '').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
 function fmtDate(v){if(!v)return 'Sin fecha'; const d=new Date(v+'T12:00:00'); return new Intl.DateTimeFormat('es-CO',{day:'2-digit',month:'short',year:'numeric'}).format(d);}
 function today(){return new Date().toISOString().slice(0,10);}
-function canManage(user){return ['pastor','leader12','cellLeader'].includes(user.role);}
+function canManage(user){return ['superadmin','pastor','leader12','cellLeader'].includes(user.role);}
 function initials(name=''){return name.split(' ').filter(Boolean).slice(0,2).map(x=>x[0]).join('').toUpperCase()||'NP';}
 function sourceLabel(c,cells,generalMeetings,cellMeetings){
   if(c.sourceType==='general'){

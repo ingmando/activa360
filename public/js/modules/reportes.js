@@ -10,7 +10,7 @@ function descendants(people, rootId){
   return out;
 }
 function scopeData(user, people, cells){
-  if(user.role==='pastor') return {personIds:new Set(people.map(p=>Number(p.id))),cells};
+  if(['pastor','superadmin'].includes(user.role)) return {personIds:new Set(people.map(p=>Number(p.id))),cells};
   if(user.role==='leader12'){
     const ids=descendants(people,user.personId); return {personIds:ids,cells:cells.filter(c=>ids.has(Number(c.leaderId)))};
   }
@@ -29,10 +29,10 @@ async function loadReportData(user){
   ]);
   const scope=scopeData(user,people,cells); const cellIds=new Set(scope.cells.map(c=>Number(c.id)));
   const scopedPeople=people.filter(p=>scope.personIds.has(Number(p.id)));
-  const scopedMeetings=user.role==='pastor'?meetings:meetings.filter(m=>cellIds.has(Number(m.cellId)));
+  const scopedMeetings=['pastor','superadmin'].includes(user.role)?meetings:meetings.filter(m=>cellIds.has(Number(m.cellId)));
   const meetingIds=new Set(scopedMeetings.map(m=>Number(m.id)));
   const scopedAttendance=attendance.filter(a=>meetingIds.has(Number(a.meetingId)));
-  const scopedCases=user.role==='pastor'?cases:cases.filter(c=>(c.cellId&&cellIds.has(Number(c.cellId)))||(c.responsibleId&&scope.personIds.has(Number(c.responsibleId))));
+  const scopedCases=['pastor','superadmin'].includes(user.role)?cases:cases.filter(c=>(c.cellId&&cellIds.has(Number(c.cellId)))||(c.responsibleId&&scope.personIds.has(Number(c.responsibleId))));
   const scopedTraining=training.filter(t=>scope.personIds.has(Number(t.personId)));
   const scopedLeadership=leadership.filter(l=>scope.personIds.has(Number(l.personId))||scope.personIds.has(Number(l.mentorId)));
   return {people,cells,meetings,attendance,cases,training,levels,generalMeetings,generalGuests,finances,leadership,ministryMembers,ministryServices,ministries,scope,scopedPeople,scopedMeetings,scopedAttendance,scopedCases,scopedTraining,scopedLeadership};

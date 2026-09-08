@@ -3,9 +3,9 @@ import { go } from '../router.js';
 
 function esc(v=''){return String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
 function fmtDate(v){if(!v)return '—'; const d=new Date(v+'T12:00:00'); return new Intl.DateTimeFormat('es-CO',{day:'2-digit',month:'short',year:'numeric'}).format(d);}
-function canManage(user){return ['pastor','leader12','cellLeader'].includes(user.role);}
+function canManage(user){return ['superadmin','pastor','leader12','cellLeader'].includes(user.role);}
 function cellScope(cells,user){
-  if(user.role==='pastor') return cells;
+  if(['pastor','superadmin'].includes(user.role)) return cells;
   if(user.role==='cellLeader') return cells.filter(c=>c.leaderId===user.personId || c.traineeLeaderId===user.personId || c.id===13);
   if(user.role==='leader12') return cells; // Demo: cobertura completa visible hasta implementar árbol de alcance por mentor.
   return [];
