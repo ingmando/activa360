@@ -1,7 +1,7 @@
 {
   "name": "Activa 360",
   "short_name": "Activa 360",
-  "description": "Plataforma pastoral integral de Activa Tu Corazón · v1.3.1 UX",
+  "description": "Plataforma pastoral integral de Activa Tu Corazón · v1.3.2 UX",
   "start_url": "./index.html#/dashboard",
   "scope": "./",
   "display": "standalone",
