@@ -6,7 +6,7 @@ export function unitName(unit, peopleById){
   if(unit?.displayName) return unit.displayName;
   const a=peopleById.get(Number(unit?.primaryPersonId));
   const b=peopleById.get(Number(unit?.secondaryPersonId));
-  return b?`${firstName(a?.name)} y ${firstName(b?.name)}`:(a?.name||'Unidad ministerial');
+  return b?`${firstName(a?.name)} y ${firstName(b?.name)}`:(a?.name||'Líder individual');
 }
 export function syntheticUnitId(personId){return 900000+Number(personId);}
 export function isSyntheticUnit(unit){return Number(unit?.id)>=900000;}

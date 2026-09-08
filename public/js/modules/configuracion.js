@@ -21,7 +21,7 @@ function downloadText(filename,text,type='application/json'){
 
 export async function renderSettings(user){
   let s=await getOne('settings',1); if(!s){s=DEFAULT_SETTINGS;await putOne('settings',s);}
-  return `<div class="page-head"><div><div class="eyebrow">Administración</div><h1>Configuración</h1><p>Parámetros generales, respaldo remoto y herramientas administrativas del MVP Cloud.</p></div><span class="badge presentation-badge">Activa 360 v1.3.3 Cloud</span></div>
+  return `<div class="page-head"><div><div class="eyebrow">Administración</div><h1>Configuración</h1><p>Parámetros generales, respaldo remoto y herramientas administrativas del MVP Cloud.</p></div><span class="badge presentation-badge">Activa 360 v1.3.4 Cloud</span></div>
   <div class="grid settings-grid">
     <section class="card section-card"><div class="section-title"><div><h2>Datos de la iglesia</h2><p class="muted">Información básica de la sede y operación pastoral.</p></div></div>
       <form id="settingsForm" class="form-grid two-col-form">

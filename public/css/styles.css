@@ -1032,3 +1032,54 @@ button,.btn,.icon-btn,.nav-btn,.mobile-bottom button{min-height:44px}
   .twelve-auto-mobile strong{font-size:1.35rem!important}
 }
 .table-action-stack{display:grid;gap:6px;min-width:112px}.table-action-stack .btn{white-space:normal;line-height:1.2}
+
+/* ===== v1.3.4 · UX polish · parejas ministeriales ===== */
+.encounter-detail-card{padding:22px!important;min-width:0}
+.encounter-dashboard-grid>.card{min-width:0}
+.encounter-banner.encounter-detail-card{gap:28px}
+.encounter-banner.encounter-detail-card>div{min-width:0}
+.encounter-banner .eyebrow,.encounter-banner h2,.encounter-banner p{margin-left:0}
+#encContent>.card,#encContent>.grid>.card{min-width:0}
+#encContent .leader-goal-list{margin-top:10px}
+#encContent .leader-goal-row{padding:4px 0}
+
+.leadership-summary-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:4px 0 22px}
+.leadership-summary-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:18px 20px;box-shadow:0 7px 22px rgba(15,91,74,.045);min-width:0;display:flex;flex-direction:column;gap:4px}
+.leadership-summary-card span{font-size:.82rem;color:var(--muted);font-weight:700}
+.leadership-summary-card strong{font-size:2rem;line-height:1.05;color:var(--primary-deep);letter-spacing:-.03em}
+.leadership-summary-card small{font-size:.76rem;color:var(--muted);line-height:1.35}
+
+.ministry-units-modal{max-height:min(88dvh,900px);overflow:auto;overscroll-behavior:contain}
+.unit-modal-toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 0 16px;border-bottom:1px solid var(--border)}
+.unit-modal-toolbar>div{display:grid;gap:3px;min-width:0}
+.unit-modal-toolbar small{color:var(--muted)}
+.unit-create-panel{margin:16px 0;padding:18px;border:1px solid var(--border);border-radius:16px;background:var(--primary-soft);scroll-margin-top:20px}
+.unit-create-panel.is-hidden{display:none}
+.unit-create-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}
+.unit-create-head h3{margin:3px 0 5px}
+.unit-create-head p{margin:0}
+.unit-modal-help{display:grid;gap:3px;border-top:1px solid var(--border);padding-top:14px;margin-top:14px}
+.unit-modal-help span{color:var(--muted);font-size:.82rem}
+.pair-existing-card{margin-top:8px}
+
+@media(max-width:900px){
+  .leadership-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .leadership-summary-card{padding:15px;min-height:118px}
+  .leadership-summary-card strong{font-size:1.75rem}
+}
+@media(max-width:760px){
+  .encounter-detail-card{padding:16px!important}
+  .encounter-banner.encounter-detail-card{gap:14px}
+  .encounter-dashboard-grid{grid-template-columns:1fr!important}
+  .leader-goal-row{grid-template-columns:minmax(0,1fr) 42px!important;gap:8px!important}
+  .leader-goal-row .analytics-progress{grid-column:1/-1!important;grid-row:2!important}
+  .leadership-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:18px}
+  .leadership-summary-card{min-height:112px;padding:14px}
+  .leadership-summary-card span{font-size:.72rem}
+  .leadership-summary-card strong{font-size:1.65rem}
+  .leadership-summary-card small{font-size:.68rem}
+  .unit-modal-toolbar,.unit-create-head{align-items:stretch;flex-direction:column}
+  .unit-modal-toolbar .btn,.unit-create-head .btn{width:100%}
+  .unit-create-panel{padding:14px}
+  .ministry-units-modal{max-height:92dvh}
+}

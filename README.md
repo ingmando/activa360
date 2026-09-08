@@ -1,3 +1,7 @@
+# Activa 360 v1.3.4 — UX Polish + Parejas Ministeriales
+
+> Esta versión consolida el pulido visual de Encuentros 180°, rediseña el resumen de Equipos de doce y habilita la creación de parejas ministeriales desde Equipos de doce y Persona 360. Mantiene Cloudflare Worker + D1 y el modelo lógico `ministryUnits` sin requerir una nueva tabla SQL.
+
 # Activa 360 v1.3.3 — Unidades Ministeriales + Sharing
 
 # Activa 360 v1.3.3 — Unidades Ministeriales + Sharing
