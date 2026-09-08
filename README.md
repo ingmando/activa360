@@ -1,4 +1,7 @@
-# Activa 360 v1.3 UX — Cloudflare Workers + D1
+# Activa 360 v1.3.1 UX Polish — Cloudflare Workers + D1
+
+> **v1.3.1 UX Polish** consolida la experiencia responsive de v1.3: resumen de Reunión de 12 rediseñado, sidebar fijo en escritorio, menú de perfil con cierre exterior/Escape, tabla semanal sticky, Personas como cards en móvil, breadcrumbs del árbol, actualización PWA controlada y badge de alertas cuando el sistema operativo lo permite.
+
 
 Versión UX Mobile First construida sobre `v1.2.1 Stable Clean`. Conserva la misma API, binding `DB` y D1; el foco de esta entrega es navegación, responsive, interacción táctil y experiencia PWA.
 

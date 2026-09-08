@@ -22,13 +22,57 @@ import { renderTwelveMeetings, bindTwelveMeetings, renderTwelveMeetingDetail, bi
 const root=document.querySelector('#app');
 const PRESENTATION_KEY='activa360_presentation';
 let deferredInstallPrompt=null;
+let uiEventController=null;
+let swReloading=false;
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstallPrompt=e;window.dispatchEvent(new CustomEvent('activa-pwa-ready'));});
 function initials(name='A 360'){return name.split(' ').slice(0,2).map(x=>x[0]).join('').toUpperCase();}
 function presentationOn(){return sessionStorage.getItem(PRESENTATION_KEY)==='1';}
 function setPresentation(on){sessionStorage.setItem(PRESENTATION_KEY,on?'1':'0');}
 
+function showUpdateBanner(registration){
+  if(document.querySelector('#appUpdateBanner')) return;
+  const banner=document.createElement('div');
+  banner.id='appUpdateBanner';
+  banner.className='app-update-banner';
+  banner.innerHTML=`<div><strong>Nueva versión disponible</strong><span>Actualiza Activa 360 para usar las últimas mejoras.</span></div><div class="app-update-actions"><button class="btn btn-soft btn-sm" id="laterUpdateBtn">Después</button><button class="btn btn-primary btn-sm" id="applyUpdateBtn">Actualizar ahora</button></div>`;
+  document.body.appendChild(banner);
+  banner.querySelector('#laterUpdateBtn')?.addEventListener('click',()=>banner.remove());
+  banner.querySelector('#applyUpdateBtn')?.addEventListener('click',()=>{
+    const waiting=registration.waiting;
+    if(waiting) waiting.postMessage({type:'SKIP_WAITING'});
+    else location.reload();
+  });
+}
+
+function syncAppBadge(count){
+  try{
+    if(count>0 && 'setAppBadge' in navigator) navigator.setAppBadge(count).catch?.(()=>{});
+    else if(count===0 && 'clearAppBadge' in navigator) navigator.clearAppBadge().catch?.(()=>{});
+  }catch(_){}
+}
+
+async function registerServiceWorker(){
+  if(!('serviceWorker' in navigator)) return;
+  try{
+    const reg=await navigator.serviceWorker.register('./service-worker.js');
+    if(reg.waiting && navigator.serviceWorker.controller) showUpdateBanner(reg);
+    reg.addEventListener('updatefound',()=>{
+      const installing=reg.installing;
+      if(!installing) return;
+      installing.addEventListener('statechange',()=>{
+        if(installing.state==='installed' && navigator.serviceWorker.controller) showUpdateBanner(reg);
+      });
+    });
+    navigator.serviceWorker.addEventListener('controllerchange',()=>{
+      if(swReloading) return;
+      swReloading=true;
+      location.reload();
+    });
+  }catch(err){console.warn('Service Worker no disponible',err);}
+}
+
 function loginView(){
-  root.innerHTML=`<div class="login-shell"><section class="login-hero"><div class="login-hero-inner"><div class="official-logo-wrap login-logo"><img src="assets/images/logo-activa-horizontal-white.png" alt="Activa Tu Corazón · Iglesia Cristiana"></div><div class="login-product"><div class="eyebrow login-eyebrow">Plataforma pastoral integral</div><h1>Activa <span>360</span></h1><p class="login-lead">Un solo lugar para acompañar personas, células, liderazgo, formación y ministerios.</p><div class="login-purpose"><span class="purpose-line"></span><p>Del primer contacto al liderazgo: cuidado, crecimiento y multiplicación.</p></div></div></div></section><section class="login-panel"><form id="loginForm" class="login-card"><div class="version-pill">v1.3 UX · D1</div><h2>Bienvenido</h2><p>Ingresa con tu cuenta de Activa 360. Los datos se almacenan de forma centralizada en Cloudflare D1.</p><div class="field"><label>Correo</label><input id="email" type="email" autocomplete="username" placeholder="tu@correo.com" required></div><div class="field"><label>Contraseña</label><input id="password" type="password" autocomplete="current-password" required></div><div class="login-actions"><button class="btn btn-primary" style="flex:1">Entrar a Activa 360</button></div><button type="button" class="text-link login-forgot" id="forgotPasswordBtn">¿Olvidaste tu contraseña?</button><div class="demo-help">Acceso protegido por sesión de servidor. Usa la cuenta asignada por el administrador y cambia la contraseña inicial antes de ingresar datos reales.</div></form></section></div>`;
+  root.innerHTML=`<div class="login-shell"><section class="login-hero"><div class="login-hero-inner"><div class="official-logo-wrap login-logo"><img src="assets/images/logo-activa-horizontal-white.png" alt="Activa Tu Corazón · Iglesia Cristiana"></div><div class="login-product"><div class="eyebrow login-eyebrow">Plataforma pastoral integral</div><h1>Activa <span>360</span></h1><p class="login-lead">Un solo lugar para acompañar personas, células, liderazgo, formación y ministerios.</p><div class="login-purpose"><span class="purpose-line"></span><p>Del primer contacto al liderazgo: cuidado, crecimiento y multiplicación.</p></div></div></div></section><section class="login-panel"><form id="loginForm" class="login-card"><div class="version-pill">v1.3.1 UX · D1</div><h2>Bienvenido</h2><p>Ingresa con tu cuenta de Activa 360. Los datos se almacenan de forma centralizada en Cloudflare D1.</p><div class="field"><label>Correo</label><input id="email" type="email" autocomplete="username" placeholder="tu@correo.com" required></div><div class="field"><label>Contraseña</label><input id="password" type="password" autocomplete="current-password" required></div><div class="login-actions"><button class="btn btn-primary" style="flex:1">Entrar a Activa 360</button></div><button type="button" class="text-link login-forgot" id="forgotPasswordBtn">¿Olvidaste tu contraseña?</button><div class="demo-help">Acceso protegido por sesión de servidor. Usa la cuenta asignada por el administrador y cambia la contraseña inicial antes de ingresar datos reales.</div></form></section></div>`;
   document.querySelector('#loginForm').onsubmit=async e=>{
     e.preventDefault();
     const btn=e.currentTarget.querySelector('button'); btn.disabled=true; btn.textContent='Ingresando…';
@@ -118,7 +162,7 @@ function layout(user){
   const sideNav=groups.map(([group,items])=>`<div class="nav-group"><span class="nav-group-label">${group}</span>${items.map(r=>`<button class="nav-btn" data-route="${r}" aria-label="${routes[r].label}"><span class="nav-icon">${routes[r].icon}</span><span class="nav-label">${routes[r].label}</span></button>`).join('')}</div>`).join('');
   const bottom=[['dashboard','Inicio'],['personas','Personas'],['celulas','Células'],['reuniones-generales','Agenda']].filter(([r])=>allowed.includes(r));
   return `<div class="app-shell ${presentationOn()?'presentation-mode':''}">
-  <aside class="sidebar" id="sidebar"><div class="sidebar-brand"><div class="sidebar-logo"><img src="assets/images/isotipo-activa-white.png" alt="Activa Tu Corazón"></div><div><strong>Activa 360</strong><small>Plataforma pastoral · v1.3 UX</small></div><button class="sidebar-close" id="sidebarClose" aria-label="Cerrar menú">×</button></div><nav class="nav">${sideNav}</nav><div class="sidebar-footer"><div class="mini-brand">Activa Tu Corazón · Bogotá Norte</div></div></aside><div class="sidebar-scrim" id="sidebarScrim"></div>
+  <aside class="sidebar" id="sidebar"><div class="sidebar-brand"><div class="sidebar-logo"><img src="assets/images/isotipo-activa-white.png" alt="Activa Tu Corazón"></div><div><strong>Activa 360</strong><small>Plataforma pastoral · v1.3.1 UX</small></div><button class="sidebar-close" id="sidebarClose" aria-label="Cerrar menú">×</button></div><nav class="nav">${sideNav}</nav><div class="sidebar-footer"><div class="mini-brand">Activa Tu Corazón · Bogotá Norte</div></div></aside><div class="sidebar-scrim" id="sidebarScrim"></div>
   <main class="main"><header class="topbar"><div class="topbar-leading"><button class="menu-trigger" id="menuTrigger" aria-label="Abrir menú">☰</button><div><div class="eyebrow desktop-title">Activa Tu Corazón</div><h2 id="pageTitle">Dashboard</h2></div></div><div class="top-actions"><button id="presentationBtn" class="presentation-toggle ${presentationOn()?'active':''}" title="Modo presentación"><span>▶</span><span class="hide-mobile">Presentación</span></button><button id="notificationBtn" class="icon-btn notification-btn" title="Centro de alertas">!<span class="notification-dot" id="alertCount">0</span></button><div class="user-menu-wrap"><button id="userMenuBtn" class="user-menu-btn"><div class="avatar top-avatar">${initials(user.name)}</div><div class="user-menu-copy"><strong>${user.name}</strong><small>${user.roleName}</small></div><span class="chevron">⌄</span></button><div id="userDropdown" class="user-dropdown" hidden><button id="profileBtn">◉ Mi perfil</button><button id="installAppBtn" hidden>⬇ Instalar aplicación</button><button id="changePasswordBtn">🔑 Cambiar contraseña</button><div class="dropdown-sep"></div><button id="logoutBtn" class="danger-action">↪ Cerrar sesión</button></div></div></div></header>${presentationOn()?'<div class="presentation-strip"><strong>Modo presentación activo</strong><span>Datos centralizados · Recorrido guiado del sistema</span><div class="presentation-strip-actions"><button id="tourBtn">Recorrido demo</button></div></div>':''}<section id="view" class="content"><div class="view-loading"><span></span><strong>Cargando información…</strong></div></section></main>
   <nav class="mobile-bottom">${bottom.map(([r,label])=>`<button data-route="${r}" aria-label="${label}"><span class="mi">${routes[r].icon}</span><span>${label}</span></button>`).join('')}<button id="moreNavBtn" aria-label="Más módulos"><span class="mi">⋯</span><span>Más</span></button></nav><div id="globalModal"></div></div>`;
 }
@@ -164,7 +208,9 @@ function openRoleModal(currentUser){
 function openProfile(user){
   const modal=document.querySelector('#globalModal');
   modal.innerHTML=`<div class="modal-backdrop"><div class="modal profile-modal"><div class="modal-head"><div><div class="eyebrow">Mi perfil</div><h2>${user.name}</h2></div><button class="icon-btn" id="closeProfile">×</button></div><div class="profile-hero compact"><div class="profile-avatar">${initials(user.name)}</div><div><span class="badge">${user.roleName}</span><h3>${user.scope}</h3><p class="muted">${user.description||''}</p></div></div></div></div>`;
-  document.querySelector('#closeProfile').onclick=()=>modal.innerHTML='';
+  const close=()=>modal.innerHTML='';
+  document.querySelector('#closeProfile').onclick=close;
+  modal.querySelector('.modal-backdrop')?.addEventListener('click',e=>{if(e.target===e.currentTarget)close();});
 }
 
 
@@ -173,6 +219,7 @@ function openChangePassword(){
   modal.innerHTML=`<div class="modal-backdrop"><div class="modal profile-modal"><div class="modal-head"><div><div class="eyebrow">Seguridad</div><h2>Cambiar contraseña</h2><p class="muted">Usa una contraseña de al menos 10 caracteres.</p></div><button class="icon-btn" id="closePassword">×</button></div><form id="passwordForm" class="form-grid"><div class="field"><label>Contraseña actual</label><input id="currentPassword" type="password" autocomplete="current-password" required></div><div class="field"><label>Nueva contraseña</label><input id="newPassword" type="password" minlength="10" autocomplete="new-password" required></div><div class="field"><label>Confirmar nueva contraseña</label><input id="confirmPassword" type="password" minlength="10" autocomplete="new-password" required></div><div class="form-actions"><button class="btn btn-primary">Actualizar contraseña</button></div></form></div></div>`;
   const close=()=>modal.innerHTML='';
   document.querySelector('#closePassword').onclick=close;
+  modal.querySelector('.modal-backdrop')?.addEventListener('click',e=>{if(e.target===e.currentTarget)close();});
   document.querySelector('#passwordForm').onsubmit=async e=>{
     e.preventDefault(); const current=document.querySelector('#currentPassword').value; const next=document.querySelector('#newPassword').value; const confirm=document.querySelector('#confirmPassword').value;
     if(next!==confirm){alert('Las nuevas contraseñas no coinciden.');return;}
@@ -188,24 +235,37 @@ async function renderApp(){
   document.querySelector('#menuTrigger')?.addEventListener('click',openNav); document.querySelector('#sidebarClose')?.addEventListener('click',closeNav); document.querySelector('#sidebarScrim')?.addEventListener('click',closeNav);
   document.querySelector('#moreNavBtn')?.addEventListener('click',()=>openMoreMenu(user));
   const menu=document.querySelector('#userDropdown');
+  const menuWrap=document.querySelector('.user-menu-wrap');
   document.querySelector('#userMenuBtn').onclick=e=>{e.stopPropagation();menu.hidden=!menu.hidden;};
-  document.addEventListener('click',()=>{if(menu)menu.hidden=true;},{once:true});
+  if(uiEventController) uiEventController.abort();
+  uiEventController=new AbortController();
+  document.addEventListener('pointerdown',e=>{
+    if(menu && !menu.hidden && menuWrap && !menuWrap.contains(e.target)) menu.hidden=true;
+  },{signal:uiEventController.signal});
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape'){
+      if(menu) menu.hidden=true;
+      document.body.classList.remove('nav-open');
+      const modal=document.querySelector('#globalModal');
+      if(modal && modal.innerHTML) modal.innerHTML='';
+    }
+  },{signal:uiEventController.signal});
   document.querySelector('#switchRoleBtn')?.addEventListener('click',()=>openRoleModal(user));
   
   document.querySelector('#tourBtn')?.addEventListener('click',()=>openPresentationTour());
-  document.querySelector('#profileBtn').onclick=()=>openProfile(user);
+  document.querySelector('#profileBtn').onclick=()=>{if(menu)menu.hidden=true;openProfile(user);};
   const installBtn=document.querySelector('#installAppBtn'); if(installBtn){installBtn.hidden=!deferredInstallPrompt;installBtn.addEventListener('click',async()=>{if(!deferredInstallPrompt)return;deferredInstallPrompt.prompt();await deferredInstallPrompt.userChoice;deferredInstallPrompt=null;installBtn.hidden=true;});}
-  document.querySelector('#changePasswordBtn')?.addEventListener('click',()=>openChangePassword());
-  document.querySelector('#logoutBtn').onclick=async()=>{await logout();history.replaceState(null,'',location.pathname);loginView();};
+  document.querySelector('#changePasswordBtn')?.addEventListener('click',()=>{if(menu)menu.hidden=true;openChangePassword();});
+  document.querySelector('#logoutBtn').onclick=async()=>{if(menu)menu.hidden=true;await logout();history.replaceState(null,'',location.pathname);loginView();};
   document.querySelector('#presentationBtn').onclick=()=>{setPresentation(!presentationOn());renderApp();};
   document.querySelector('#notificationBtn').onclick=()=>go('alertas');
-  const refreshAlertBadge=async()=>{const n=await activeAlertCount(user);const badge=document.querySelector('#alertCount');if(badge){badge.textContent=n>99?'99+':String(n);badge.style.display=n?'grid':'none';}document.querySelector('#notificationBtn')?.classList.toggle('has-critical',n>0);};
+  const refreshAlertBadge=async()=>{const n=await activeAlertCount(user);const badge=document.querySelector('#alertCount');if(badge){badge.textContent=n>99?'99+':String(n);badge.style.display=n?'grid':'none';}document.querySelector('#notificationBtn')?.classList.toggle('has-critical',n>0);syncAppBadge(n);};
   window.addEventListener('activa-alerts-changed',refreshAlertBadge,{once:true});
   await refreshAlertBadge();
   await renderContent(user);
 }
 window.addEventListener('activa-open-tour',()=>openPresentationTour());
-if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));}
+window.addEventListener('load',()=>registerServiceWorker());
 
 
 window.addEventListener('activa-auth-expired',()=>{history.replaceState(null,'',location.pathname);loginView();});
