@@ -1,13 +1,13 @@
-# Credenciales iniciales — Activa 360 Cloud
+# Credenciales iniciales de prueba — Activa 360 v1.2.1 Stable
 
-> Estas credenciales son únicamente para el piloto inicial. Cambia las contraseñas antes de ingresar información pastoral real. Este archivo NO se publica porque está fuera de `public/`.
+Estas credenciales son **temporales para el piloto**. Deben cambiarse al primer ingreso. Los hashes del seed usan PBKDF2-SHA256 con **100.000 iteraciones**, compatible con Cloudflare Workers.
 
-| Perfil | Correo | Contraseña inicial |
+| Rol | Usuario | Contraseña temporal |
 |---|---|---|
-| Pastor principal | pastor@activa360.demo | `Activa-Pastor-2026!` |
-| Líder de 12 | lider12@activa360.demo | `Activa-12-2026!` |
-| Líder de célula | lidercelula@activa360.demo | `Activa-Celula-2026!` |
-| Servidor | servidor@activa360.demo | `Activa-Servidor-2026!` |
-| Miembro | miembro@activa360.demo | `Activa-Miembro-2026!` |
+| Pastor principal | `pastor@activa360.demo` | `Activa360*2026` |
+| Líder de 12 | `lider12@activa360.demo` | `Activa12*2026` |
+| Líder de célula | `lidercelula@activa360.demo` | `ActivaCelula*2026` |
+| Servidor | `servidor@activa360.demo` | `ActivaServidor*2026` |
+| Miembro | `miembro@activa360.demo` | `ActivaMiembro*2026` |
 
-La autenticación ya es real: el Worker valida PBKDF2 en D1 y entrega una cookie `HttpOnly`, `Secure`, `SameSite=Strict`.
+> No usar estas credenciales como contraseñas definitivas de producción.

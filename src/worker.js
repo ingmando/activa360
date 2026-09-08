@@ -34,14 +34,14 @@ async function verifyPassword(password, encoded) {
     const [kind, iterStr, saltB64, hashB64] = encoded.split('$');
     if (kind !== 'pbkdf2_sha256') return false;
     const key = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveBits']);
-    const bits = await crypto.subtle.deriveBits({ name:'PBKDF2', hash:'SHA-256', salt:b64ToBytes(saltB64), iterations:Number(iterStr) }, key, b64ToBytes(hashB64).length * 8);
+    const bits = await crypto.subtle.deriveBits({ name:'PBKDF2', hash:'SHA-256', salt:b64ToBytes(saltB64), iterations: Math.min(Number(iterStr), 100000) }, key, b64ToBytes(hashB64).length * 8);
     const actual = new Uint8Array(bits), expected = b64ToBytes(hashB64);
     if (actual.length !== expected.length) return false;
     let diff=0; for(let i=0;i<actual.length;i++) diff |= actual[i]^expected[i];
     return diff===0;
   } catch { return false; }
 }
-async function createPasswordHash(password, iterations = 120000) {
+async function createPasswordHash(password, iterations = 100000) {
   const salt=crypto.getRandomValues(new Uint8Array(16));
   const key=await crypto.subtle.importKey('raw',enc.encode(password),'PBKDF2',false,['deriveBits']);
   const bits=await crypto.subtle.deriveBits({name:'PBKDF2',hash:'SHA-256',salt,iterations},key,256);

@@ -1,3 +1,7 @@
+# Activa 360 v1.2.1 — Stable Clean (Cloudflare Workers + D1)
+
+Versión estable y reproducible tomada del despliegue funcional del piloto. Se limpiaron artefactos locales (`node_modules`, `.wrangler`) y se corrigieron los hashes de usuarios demo a PBKDF2-SHA256 con 100.000 iteraciones.
+
 # Activa 360 v1.2 Cloudflare D1
 
 MVP pastoral de Activa Tu Corazón preparado para ejecutarse como una aplicación web full-stack sobre **Cloudflare Workers + Static Assets + D1**.
