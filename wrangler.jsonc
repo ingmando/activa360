@@ -18,5 +18,18 @@
   ],
   "observability": {
     "enabled": true
+  },
+"env": {
+  "pilot": {
+    "name": "activa360-pilot",
+    "d1_databases": [
+      {
+        "binding": "DB",
+        "database_name": "activa360-pilot-db",
+        "database_id": "4e77b688-c0f9-4ef2-9c47-2e8a71ab0d10",
+        "migrations_dir": "migrations"
+      }
+    ]
   }
+}
 }
