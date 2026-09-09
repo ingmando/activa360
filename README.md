@@ -145,3 +145,9 @@ Cada registro de negocio conserva el objeto de la v1.2 en una columna JSON valid
 
 ## v1.3.3
 Ver `CHANGELOG_v1.3.3.md` y `docs/QA_V1.3.3_MINISTRY_UNITS_SHARING.md`. La versión añade unidades ministeriales, hábitos personales/unidad, estados funcionales de Reunión de 12 y enlaces seguros por WhatsApp.
+
+## v1.3.5 · Pilot Manual Metrics
+
+Esta versión permite corregir manualmente Células, Realizadas, En escuela y Encuentro en los reportes de Reunión de 12 mientras la información base continúa en consolidación. Los cálculos automáticos siguen funcionando como valor sugerido y fallback.
+
+Consulta `docs/MAPA_FUNCIONAL_V1.3.5.md` para el mapa completo de menús, vistas, stores, endpoints y persistencia D1.

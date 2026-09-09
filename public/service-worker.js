@@ -1,5 +1,5 @@
-const CACHE='activa360-v1.3.4-ux-ministry-polish';
-const CORE=['./','./index.html','./css/styles.css?v=1.3.2','./js/app.js?v=1.3.2','./js/auth.js','./js/database.js','./js/router.js','./js/seed.js','./manifest.webmanifest','./assets/images/logo-activa-horizontal-white.png','./assets/images/isotipo-activa-white.png','./assets/images/isotipo-activa-blue.png'];
+const CACHE='activa360-v1.3.5-pilot-manual-metrics';
+const CORE=['./','./index.html','./css/styles.css?v=1.3.5','./js/app.js?v=1.3.5','./js/auth.js','./js/database.js','./js/router.js','./js/seed.js','./manifest.webmanifest','./assets/images/logo-activa-horizontal-white.png','./assets/images/isotipo-activa-white.png','./assets/images/isotipo-activa-blue.png'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE))));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
 self.addEventListener('message',event=>{if(event.data?.type==='SKIP_WAITING') self.skipWaiting();});
